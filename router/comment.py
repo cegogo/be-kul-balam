@@ -20,6 +20,6 @@ def create_comment(request: CommentBase, db: Session = Depends(get_db), current_
     return db_comment.create_comment(db, request)
 
 #Delete Post
-@router.delete('/posts/{id}')
+@router.delete('/{id}')
 def delete_comment(id:int, db:Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     return db_comment.delete_comment(db, id)

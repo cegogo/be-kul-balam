@@ -1,9 +1,8 @@
-from typing import List, Dict, Any, Optional
-from pydantic import BaseModel, EmailStr, ValidationError, validator #data validation = pydantic = class
+from typing import List, Optional
+from pydantic import BaseModel, EmailStr, validator #data validation = pydantic = class
 import re
 from datetime import datetime
-
-from db.models import DbUser
+from enums import OrderStatus
 
 #Article inside UserDisplay
 class Post(BaseModel):
@@ -27,10 +26,10 @@ class UserBase(BaseModel):
 class UserDisplay(BaseModel):
     username: str
     email: str
+    id: int
     posts: List[Post] = []  #tpye of data which we want return
     class Config():
         from_attributes = True
-
 
 class FriendshipBase(BaseModel):
     user_id: int
@@ -49,7 +48,7 @@ class FriendRequests(BaseModel):
     friend_requests: List[Friendship]
         
 
-#user inside article display
+#user inside article display and ProductDisplay
 class User(BaseModel):
     id:int
     username: str
@@ -152,3 +151,102 @@ class GroupPostDisplay(BaseModel):
 
 class GroupPostUpdate(BaseModel):
     content: str
+
+class ProductBase (BaseModel):
+    product_name: str
+    description: str
+    price: float
+    quantity: int 
+    published: bool
+    seller_id: int
+
+#PRoductReview inside ReviewDisplay
+class ProductReview (BaseModel):
+    product_name: str
+    seller_id: int
+    class Config():
+        from_attributes = True
+
+#ImageInProduct inside ProductDisplay
+class ImageInProduct (BaseModel):
+    file_path: str
+    id: int
+    class Config():
+        from_attributes = True
+
+class ProductDisplay (BaseModel):
+    product_name: str
+    id: int
+    description: str
+    price: float
+    quantity: float
+    images: List[ImageInProduct] = []
+    published: bool
+    user: User
+    class Config():
+        from_attributes = True
+
+class ProductImage (BaseModel):
+    id: int
+    file_path: str
+    product_id: int
+
+class MinOrderLine(BaseModel):
+    product_id: int
+    quantity: int
+
+class OrderLine(BaseModel):
+    order_id: Optional[int]
+    product_id: int
+    quantity: int
+    total: Optional[float]
+    class Config():
+        from_attributes = True
+
+#Inside Order
+class OrderLines(BaseModel):
+    product_id: int
+    quantity: int
+    total: Optional[float]
+    class Config():
+        from_attributes = True
+
+class Order(BaseModel):
+    id: int
+    order_status: OrderStatus
+    user_id: int
+    total: float = 0
+    order_lines: List[OrderLines] = []
+    class Config():
+        from_attributes = True
+
+class Review(BaseModel):
+    score: int
+    comment: str
+
+class ReviewDisplay(BaseModel):
+    creator_id: int
+    product_id: int
+    score: int
+    comment: str
+    product: ProductReview
+    class Config():
+        from_attributes = True
+
+#Product inside UserProductDisplay
+class Product(BaseModel):
+    product_name: str
+    id: int
+    description: str
+    price: float
+    published: bool
+    class Config():
+        from_attributes = True
+
+class UserProductDisplay(BaseModel):
+    username: str
+    email: str
+    id: int
+    products: List[Product] = []
+    class Config():
+        from_attributes = True

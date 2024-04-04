@@ -20,7 +20,7 @@ def create_post(content:str, creator_id: int, username: str, db: Session = Depen
     return new_post
 
 @router.post("/posts/")
-def create_image(username: str, image: UploadFile = File(None), db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+def create_image(username: str, image: UploadFile = File(None), db: Session = Depends(get_db)):
     image_url = None
     if image:
         if not is_valid_image(image.filename):
@@ -49,6 +49,8 @@ def is_valid_image(filename: str) -> bool:
     valid_extensions = ('.jpg', '.jpeg', '.png', '.gif')
     ext = os.path.splitext(filename)[-1].lower()
     return ext in valid_extensions
+
+
 
 #get spesific post
 @router.get('/posts/{id}') #, response_model=PostDisplay)
