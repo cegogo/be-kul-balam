@@ -36,3 +36,14 @@ def leave_group_endpoint(id: int, request: GroupMembershipRequest, db: Session =
         group.members.remove(user)
         db.commit()  # Commit changes to the database session
     return {"message": "User left the group"}
+
+@router.put("/{id}/leave_group")
+def leave_group_endpoint(id: int, request: GroupMembershipRequest, db: Session = Depends(get_db)):
+    user = db.query(DbUser).filter(DbUser.id == request.user_id).first()
+    group = db.query(DbGroup).filter(DbGroup.id == id).first()
+    if not user or not group:
+        raise HTTPException(status_code=404, detail="User or group not found")
+    if user in group.members:
+        group.members.remove(user)
+        db.commit()  # Commit changes to the database session
+    return {"message": "User left the group"}
