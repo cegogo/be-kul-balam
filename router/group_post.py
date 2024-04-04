@@ -8,7 +8,7 @@ from schemas import GroupPostBase, GroupPostDisplay, GroupPostUpdate, UserBase
 from typing import List
 
 router = APIRouter(
-    prefix='/groups',
+    prefix='/group_posts',
     tags=['groups_posts']
 )
 
@@ -37,7 +37,7 @@ def get_group_posts(group_id: int, db: Session = Depends(get_db)):
     group_posts = db_group_post.get_group_posts_by_group_id(db, group_id)
     return group_posts
 
-@router.get('/{group_id}/posts/{post_id}', response_model=GroupPostDisplay)
+@router.get('/{id}', response_model=GroupPostDisplay)
 def get_group_post(group_id: int, user_id: int = Query(...), db: Session = Depends(get_db)):
     group_post = db_group_post.get_group_post(db, group_id)
     if group_post.group_id != group_id:
@@ -46,7 +46,7 @@ def get_group_post(group_id: int, user_id: int = Query(...), db: Session = Depen
         raise HTTPException(status_code=403, detail="User is not a member of the group")
     return group_post
 
-@router.put('/{group_id}/posts/{post_id}', response_model=GroupPostDisplay)
+@router.put('/{id}', response_model=GroupPostDisplay)
 def update_group_post(group_id: int, post_id: int, request: GroupPostUpdate, user_id: int, db: Session = Depends(get_db)):
     # Retrieve the group post from the database
     group_post = db_group_post.get_group_post(db, post_id)
@@ -60,8 +60,7 @@ def update_group_post(group_id: int, post_id: int, request: GroupPostUpdate, use
     
     return updated_post
 
-
-@router.delete('/{group_id}/posts/{post_id}')
+@router.delete('/{id}')
 def delete_group_post(group_id: int, post_id: int, user_id: int = Query(...), db: Session = Depends(get_db),current_user: UserBase = Depends(get_current_user)):
     group_post = db_group_post.get_group_post(db, post_id)
     if group_post.group_id != group_id:
