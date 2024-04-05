@@ -38,12 +38,10 @@ def get_group_posts(group_id: int, db: Session = Depends(get_db)):
     return group_posts
 
 @router.get('/{id}', response_model=GroupPostDisplay)
-def get_group_post(group_id: int, user_id: int = Query(...), db: Session = Depends(get_db)):
-    group_post = db_group_post.get_group_post(db, group_id)
-    if group_post.group_id != group_id:
-        raise HTTPException(status_code=403, detail="Post does not belong to the specified group")
-    if not is_member(db, user_id, group_id):
-        raise HTTPException(status_code=403, detail="User is not a member of the group")
+def get_group_post(id: int, db: Session = Depends(get_db)):
+    group_post = db_group_post.get_group_post(db, id)
+    if not group_post:
+        raise HTTPException(status_code=404, detail=f"Group post with id {id} not found")
     return group_post
 
 @router.put('/{id}', response_model=GroupPostDisplay)

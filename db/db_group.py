@@ -6,19 +6,19 @@ from typing import List
 from schemas import GroupBase, GroupDisplay
 
 def create_group(db: Session, request: GroupBase):
-    new_group = DbGroup(
-        name=request.name,
-        description=request.description,
-        creator_id=request.creator_id,
-        is_public=request.is_public,
-        visibility=request.visibility,
-        created_at=datetime.now()
-    )
+    # Ensure that created_at is set to the current datetime if not provided
+    created_at = request.created_at or datetime.now()
     
-    new_group.members = []  # Assign empty list to members attribute
+    # Create a new Group instance with the provided data
+    new_group = DbGroup(**request.dict())
+    
+    # Add the group to the database session and commit the transaction
     db.add(new_group)
     db.commit()
+    
+    # Refresh the group instance to fetch the generated ID from the database
     db.refresh(new_group)
+    
     return new_group
 
 def get_all_groups(db: Session) -> List[GroupDisplay]:

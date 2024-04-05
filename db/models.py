@@ -69,7 +69,7 @@ class DbComment(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     text = Column(String)
-    username = Column(String)
+    user_id = Column(Integer)
     timestamp = Column(DateTime)
     post_id = Column(Integer, ForeignKey('posts.id'))
     

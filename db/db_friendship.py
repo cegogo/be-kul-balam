@@ -17,10 +17,6 @@ def create_friendship(db: Session, friendship: FriendshipCreate):
     db.refresh(db_friendship)
     return db_friendship
 
-
-def get_friendships_for_user(db: Session, user_id: int):
-    return db.query(DbFriendship).filter(DbFriendship.user_id == user_id).all()
-
 def get_friend_request(db: Session, friendship_id: int):
     """Retrieve a friend request by ID."""
     return db.query(DbFriendship).filter(DbFriendship.id == friendship_id).first()
