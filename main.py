@@ -1,9 +1,9 @@
 import datetime
 from fastapi import FastAPI, WebSocketDisconnect
-from router import join, user, userwall,comment, group, group_post, friendship
+from router import join, user, userwall,comment, group, group_post, friendship, images, order_lines, orders, product, reviews, statistics, test_data
 from db import models
 from db.database import engine
-from db.insert_admin import insert_admin
+#from db.insert_admin import insert_admin
 from auth import authentication
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
@@ -19,10 +19,17 @@ app.include_router(group.router)
 app.include_router(join.router)
 app.include_router(group_post.router)
 app.include_router(friendship.router)
+app.include_router(product.router)
+app.include_router(statistics.router)
+app.include_router(images.router)
+app.include_router(orders.router)
+app.include_router(order_lines.router)
+app.include_router(test_data.router)
+app.include_router(reviews.router)
 
 @app.get('/')
 def index():
-    return {'Hello! Welcome to NakamaNet'}
+    return {'Hello! Welcome to KulBalam'}
 
 
 class ConnectionManager:
@@ -64,9 +71,9 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         await manager.broadcast(f"[{now}] User {client_id} left the chat")
 
 
-@app.on_event("startup")
-def startup_event():
-    insert_admin()
+#@app.on_event("startup")
+#def startup_event():
+#    insert_admin()
 
 
 models.Base.metadata.create_all(engine)  #db engine

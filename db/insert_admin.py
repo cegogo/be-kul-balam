@@ -7,7 +7,7 @@ from .models import DbUser  # Assuming your models are imported from another mod
 from .hash import Hash  # Assuming your hashing utility is imported from another module
 from .database import SessionLocal  # Assuming your database session is imported from another module
 
-
+'''
 def insert_admin():
     db = SessionLocal()
     try:
@@ -41,3 +41,5 @@ def insert_admin():
 
     finally:
         db.close()
+
+'''

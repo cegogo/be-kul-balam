@@ -11,23 +11,25 @@ router = APIRouter(
     tags=['groups']
 )
 
-@router.post("/{group_id}/join_group")
-def join_group_endpoint(group_id: int, request: GroupMembershipRequest, db: Session = Depends(get_db)):
+@router.post("/{id}/join_group")
+def join_group_endpoint(id: int, request: GroupMembershipRequest, db: Session = Depends(get_db)):
     user = db.query(DbUser).filter(DbUser.id == request.user_id).first()
-    group = db.query(DbGroup).filter(DbGroup.id == group_id).first()
-    if not user or not group:
-        raise HTTPException(status_code=404, detail="User or group not found")
+    group = db.query(DbGroup).filter(DbGroup.id == id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if not group:
+        raise HTTPException(status_code=404, detail=f"Group with the id '{id}' not found")    
     if user in group.members:
-        raise HTTPException(status_code=400, detail="User already in the group")
-    db_join.join_group(db, group_membership, group_id=group_id, user_id=user.id, username=user.username, membership_id=None)
+        raise HTTPException(status_code=409, detail=f"User already in the group with the id '{id}'")
+    db_join.join_group(db, group_membership, group_id=id, user_id=user.id, username=user.username, membership_id=None)
     group.members.append(user)  # Assuming group.members is a list
     # Commit changes to the database session
-    return {"message": "User joined the group"}
+    return {"message": f"User joined the group with the id '{id}'"}
 
-@router.put("/{group_id}/leave_group")
-def leave_group_endpoint(group_id: int, request: GroupMembershipRequest, db: Session = Depends(get_db)):
+@router.put("/{id}/leave_group")
+def leave_group_endpoint(id: int, request: GroupMembershipRequest, db: Session = Depends(get_db)):
     user = db.query(DbUser).filter(DbUser.id == request.user_id).first()
-    group = db.query(DbGroup).filter(DbGroup.id == group_id).first()
+    group = db.query(DbGroup).filter(DbGroup.id == id).first()
     if not user or not group:
         raise HTTPException(status_code=404, detail="User or group not found")
     if user in group.members:

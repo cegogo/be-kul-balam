@@ -56,4 +56,14 @@ def delete_user(db:Session, id: int):
     db.commit()
     return Response(status_code=204)
 
+def get_product_by_user_id (db: Session, id: int):
+    user = db.query(DbUser).filter(DbUser.id == id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id '{id}' not found."
+        )
+    return user
 
+def count_all_users(db: Session) -> int:
+    return db.query(DbUser).count()
