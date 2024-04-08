@@ -1,7 +1,7 @@
 #crud.py
 from sqlalchemy.orm.session import Session
 from db.models import DbPost
-from schemas import ImageBase, PostBase, PostUpdate
+from schemas import PostBase, PostUpdate
 from fastapi import HTTPException, Response, status
 import datetime
 from typing import List
@@ -11,17 +11,6 @@ def create_post(db: Session, request:PostBase):
         content= request.content,
         user_id = request.user_id,
         username= request.username,
-        timestamp = datetime.datetime.now()
-    ) 
-    db.add(new_post)
-    db.commit()
-    db.refresh(new_post)
-    return new_post
-
-def create_image(db: Session, request:ImageBase):
-    new_post = DbPost(
-        username= request.username,
-        image_url = request.image_url,
         timestamp = datetime.datetime.now()
     ) 
     db.add(new_post)

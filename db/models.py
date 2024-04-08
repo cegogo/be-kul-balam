@@ -58,7 +58,6 @@ class DbPost(Base):
     timestamp = Column(DateTime)
     user_id = Column(Integer, ForeignKey('users.id'))
     username = Column(String)
-    image_url = Column(String)
 
     user = relationship('DbUser', back_populates='posts')
     comments = relationship('DbComment', back_populates= 'post', cascade="all, delete")

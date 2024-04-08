@@ -59,19 +59,12 @@ class PostBase(BaseModel): #what we recieve from the user when we are creating p
     content: str
     user_id : int
     username: str
-    image_url: Optional[str] = None
-    timestamp: datetime
-
-class ImageBase(BaseModel): #what we recieve from the user when we are creating post
-    username: str
-    image_url: Optional[str] = None
     timestamp: datetime
 
 class  PostDisplay(BaseModel): #a data structure to send to the user when we are creating post
     content: str
     user: User
     timestamp: datetime
-    image_url: Optional[str] = None
     class Config(): #convert instances of ORM models(db models) into dictionaries whrn serializing the data.
         from_attributes = True
 
