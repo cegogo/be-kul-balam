@@ -21,7 +21,7 @@ def join_group_endpoint(id: int, request: GroupMembershipRequest, db: Session = 
         raise HTTPException(status_code=404, detail=f"Group with the id '{id}' not found")    
     if user in group.members:
         raise HTTPException(status_code=409, detail=f"User already in the group with the id '{id}'")
-    db_join.join_group(db, group_membership, group_id=id, user_id=user.id, username=user.username, membership_id=None)
+    db_join.join_group(db, group_membership, group_id=id, user_id=user.id, membership_id=None)
     group.members.append(user)  # Assuming group.members is a list
     # Commit changes to the database session
     return {"message": f"User joined the group with the id '{id}'"}

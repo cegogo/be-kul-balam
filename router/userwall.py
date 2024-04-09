@@ -1,10 +1,8 @@
-from schemas import ImageBase, PostBase, PostDisplay, UserAuth, UserBase
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from schemas import PostBase, PostDisplay, PostUpdate, UserBase
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db.database import get_db
-from db import db_post
-from auth.oauth2 import oauth2_scheme
-from typing import List
+from db import db_post, db_user
 from auth.oauth2 import get_current_user
 from datetime import datetime
 import os
@@ -14,42 +12,27 @@ router = APIRouter(
     tags=['userwall']
 )
 
+
 @router.post("/posts")
-def create_post(content:str, creator_id: int, username: str, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
-    new_post = db_post.create_post(db=db, request=PostBase(content=content, creator_id=creator_id, username=username, timestamp=datetime.now()))
+def create_post(content: str, user_id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+    # Fetch the username associated with the provided user_id
+    username = db_user.get_username(db=db, user_id=user_id)
+    if not username:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Create the post with the provided user_id and fetched username
+    new_post = db_post.create_post(
+        db=db,
+        request=PostBase(content=content, user_id=user_id, username=username, timestamp=datetime.now())
+    )
     return new_post
 
-@router.post("/posts/")
-def create_image(username: str, image: UploadFile = File(None), db: Session = Depends(get_db)):
-    image_url = None
-    if image:
-        if not is_valid_image(image.filename):
-            raise HTTPException(status_code=400, detail="Only JPG, JPEG, PNG and GIF images are allowed.")
-        image_url = save_image(image)
-    
-    new_post = db_post.create_image(db=db, request=ImageBase(username=username, image_url=image_url, timestamp=datetime.now()))
-    return new_post
 
 # This endpoint is used to retrieve posts # Get all posts from User 
 @router.get("/posts/all")
 def posts(db: Session = Depends(get_db)):
     posts = db_post.get_all(db)
     return posts
-
-# Function to save uploaded image
-def save_image(image: UploadFile):
-    unique_filename = str(uuid.uuid4()) + os.path.splitext(image.filename)[-1]
-    file_path = os.path.join("images", unique_filename)
-    with open(file_path, "wb") as f:
-        f.write(image.file.read())
-    return file_path
-
-# Function to check if the file type is valid
-def is_valid_image(filename: str) -> bool:
-    valid_extensions = ('.jpg', '.jpeg', '.png', '.gif')
-    ext = os.path.splitext(filename)[-1].lower()
-    return ext in valid_extensions
-
 
 
 #get spesific post
@@ -59,10 +42,19 @@ def get_post(id:int, db:Session = Depends(get_db)): #secure end-point #token: st
         'data': db_post.get_post(db,id)
     }
 
-#Update User
+#Update Post
 @router.put('/posts/{id}', response_model=PostDisplay)
-def update_post(id: int, request:PostBase, db:Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
-    return db_post.update_post(db, id, request)
+def update_post(id: int, request: PostUpdate, db: Session = Depends(get_db), current_user:UserBase = Depends(get_current_user)):
+    # Check if the post exists
+    post = db_post.get_post(db, id)
+    if not post:
+        raise HTTPException(status_code=404, detail=f"Post with id {id} not found")
+
+    # Update the post content and image_url
+    post = db_post.update_post(db, id, request)
+    
+    return post
+
 
 #Delete Post
 @router.delete('/posts/{id}')

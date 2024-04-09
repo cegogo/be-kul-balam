@@ -25,6 +25,12 @@ def get_user(db:Session, id:int):
             detail= f'User with id {id} not found')  
     return user
 
+def get_username(db: Session, user_id: int):
+    user = db.query(DbUser).filter(DbUser.id == user_id).first()
+    if user:
+        return user.username
+    return None
+
 def get_user_by_username(db:Session, username: str):
     user= db.query(DbUser).filter(DbUser.username == username).first() 
     if not user:

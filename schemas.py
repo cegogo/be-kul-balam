@@ -55,25 +55,22 @@ class User(BaseModel):
     class Config():
         from_attributes = True
 
-class PostBase(BaseModel): #what we recieve from the user when we are creating article
+class PostBase(BaseModel): #what we recieve from the user when we are creating post
     content: str
-    creator_id : int
+    user_id : int
     username: str
-    image_url: Optional[str] = None
     timestamp: datetime
 
-class ImageBase(BaseModel): #what we recieve from the user when we are creating article
-    username: str
-    image_url: Optional[str] = None
-    timestamp: datetime
-
-class  PostDisplay(BaseModel): #a data structure to send to the user when we are creating article
+class  PostDisplay(BaseModel): #a data structure to send to the user when we are creating post
     content: str
     user: User
     timestamp: datetime
-    image_url: Optional[str] = None
     class Config(): #convert instances of ORM models(db models) into dictionaries whrn serializing the data.
         from_attributes = True
+
+class PostUpdate(BaseModel):
+    content: str
+    image_url: str = None
 
 class UserAuth(BaseModel):
     id: int
@@ -84,13 +81,13 @@ class UserAuth(BaseModel):
 #For Post Display
 class CommentDisplay(BaseModel):
     txt: str
-    username: str
+    user_id: int
     timestamp: datetime
     class Config(): #convert instances of ORM models(db models) into dictionaries whrn serializing the data.
         from_attributes = True
     
 class CommentBase(BaseModel):
-    username: str
+    user_id: int
     txt: str
     post_id: int
 
@@ -98,7 +95,6 @@ class CommentBase(BaseModel):
 #Group
         
 class GroupBase(BaseModel):
-    id: int  # Unique identifier for the group
     name: str
     description: str
     created_at: datetime = datetime.now()
@@ -106,10 +102,6 @@ class GroupBase(BaseModel):
     members: List[int] = []  # List of user IDs representing members of the group
     is_public: bool = True  # Indicates whether the group is public or private
     visibility: str = "public"  # Visibility settings of the group
-    #join_requests: List[int] = []  # List of user IDs who requested to join the group
-    #avatar_url: str = None  # URL to the group's avatar or image
-    #settings: Dict[str, Any] = {}  # Additional settings specific to the group
-    #activities: List[str] = []  # Activities or events associated with the group
 
 class GroupDisplay(BaseModel):
     id: int
@@ -125,13 +117,11 @@ class GroupDisplay(BaseModel):
 
 class GroupMembershipRequest(BaseModel):
     user_id: int
-    username: str
 
 class GroupMembershipResponse(BaseModel):
     message: str
 
 class GroupPostBase(BaseModel):
-    id: int
     content: str
     group_id: int
     author_id: int

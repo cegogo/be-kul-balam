@@ -1,7 +1,7 @@
 #crud.py
 from sqlalchemy.orm.session import Session
 from db.models import DbPost
-from schemas import ImageBase, PostBase
+from schemas import PostBase, PostUpdate
 from fastapi import HTTPException, Response, status
 import datetime
 from typing import List
@@ -9,19 +9,8 @@ from typing import List
 def create_post(db: Session, request:PostBase):
     new_post = DbPost(
         content= request.content,
-        user_id = request.creator_id,
+        user_id = request.user_id,
         username= request.username,
-        timestamp = datetime.datetime.now()
-    ) 
-    db.add(new_post)
-    db.commit()
-    db.refresh(new_post)
-    return new_post
-
-def create_image(db: Session, request:ImageBase):
-    new_post = DbPost(
-        username= request.username,
-        image_url = request.image_url,
         timestamp = datetime.datetime.now()
     ) 
     db.add(new_post)
@@ -40,16 +29,17 @@ def get_post(db: Session, id:int):
             detail= f'Post with id {id} not found')  #stop the code running
     return post
 
-def update_post(db: Session, id:int, request:PostBase): #this func is designed to update user information in the db based on the data provided in the "request" parameter.
-    post = db.query(DbPost).filter(DbPost.id == id)
-    if not post.first():
+def update_post(db: Session, id:int, request: PostUpdate): # Update post function now accepts PostUpdate model
+    post = db.query(DbPost).filter(DbPost.id == id).first()
+    if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
             detail= f'Post with id {id} not found')  
-    post.update({
-        DbPost.content: request.content
-    })
+    
+    # Update the post content and image_url if provided
+    post.content = request.content
+    post.image_url = request.image_url
+    
     db.commit()
-    post = db.query(DbPost).filter(DbPost.id == id).first()
     return post
 
 def delete_post(db:Session, id: int):
