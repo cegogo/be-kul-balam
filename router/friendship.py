@@ -13,30 +13,6 @@ router = APIRouter(
     tags=["friendships"]
 )
 
-@router.get("/friendships/{user_id}", response_model=List[Friendship])
-def get_friends(user_id: int, db: Session = Depends(get_db)):
-    """Get a list of friendships for a given user."""
-    friendships = db.query(DbFriendship).filter(
-        (DbFriendship.user_id == user_id) | (DbFriendship.friend_id == user_id)
-    ).all()
-    
-    all_friendships = []
-    
-    for friendship in friendships:
-        if friendship.user_id == user_id:
-            all_friendships.append({
-                "user_id": friendship.user_id,
-                "friend_id": friendship.friend_id,
-                "id": friendship.id
-            })
-        else:
-            all_friendships.append({
-                "user_id": friendship.friend_id,
-                "friend_id": friendship.user_id,
-                "id": friendship.id
-            })
-    
-    return all_friendships
 
 @router.post("/friendships", response_model=Friendship)
 def send_friend_request(from_user_id: int, to_user_id: int, db: Session = Depends(get_db)):
@@ -49,27 +25,27 @@ def send_friend_request(from_user_id: int, to_user_id: int, db: Session = Depend
     return create_friendship(db, friendship_data)
 
 
-@router.put("/friendships/{friendship_id}", response_model=Friendship)
-def update_friendship_status(friendship_id: int, status: str, db: Session = Depends(get_db)):
+@router.put("/friendships/{id}", response_model=Friendship)
+def update_friendship_status(id: int, status: str, db: Session = Depends(get_db)):
     """Update the status of a friendship request."""
-    friendship = get_friend_request(db, friendship_id)
+    friendship = get_friend_request(db, id)
     if friendship:
         if status.lower() == "accept":
             friendship.accepted = True
             db.commit()
             return friendship
         elif status.lower() == "reject":
-            delete_friend_request(db, friendship_id)
+            delete_friend_request(db,id)
             return friendship
         else:
             raise HTTPException(status_code=400, detail="Invalid status. Use 'accept' or 'reject'.")
     raise HTTPException(status_code=404, detail="Friendship request not found")
 
 
-@router.delete("/friends/{friendship_id}")
-def unfriend(friendship_id: int, db: Session = Depends(get_db)):
+@router.delete("/friends/{id}")
+def unfriend(id: int, db: Session = Depends(get_db)):
     """Remove a friendship."""
-    friendship = db.query(DbFriendship).filter(DbFriendship.id == friendship_id).first()
+    friendship = db.query(DbFriendship).filter(DbFriendship.id == id).first()
     if friendship:
         db.delete(friendship)
         db.commit()
