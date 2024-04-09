@@ -43,6 +43,8 @@ def get_all_product_reviews (db: Session, product_id: int):
     if not product:
         raise HTTPException(status_code=404, detail=f"Product with id '{product_id}' not found")
     reviews = db.query(DbProductReview).filter(DbProductReview.product_id == product_id).all()
+    if not reviews:
+        raise HTTPException(status_code=404, detail=f"No reviews found for the product with id '{product_id}'")
     return reviews
 
 def get_review_by_id(db: Session, id: int):
@@ -74,8 +76,8 @@ def update_review(db: Session, id: int, score: int, comment: str):
     review.score = score
     review.comment = comment
     db.commit()
-    new_review = db.query(DbProductReview).filter(DbProductReview.id == id).first()
-    return new_review
+    db.refresh(review)
+    return review
 
 def delete_review(db: Session, id: int):
     review = db.query(DbProductReview).filter(DbProductReview.id == id).first()

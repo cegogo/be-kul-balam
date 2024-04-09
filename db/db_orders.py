@@ -107,6 +107,7 @@ def create_order_line(db: Session, order_id: int, product_id: int, quantity: int
     order.total += total_price
    
     db.commit()
+    db.refresh(new_order_line)
     return new_order_line
 
 def update_order_line(db: Session, id: int, request: MinOrderLine):
