@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from router.client import html
 from fastapi.websockets import WebSocket
+from fastapi.middleware.cors import CORSMiddleware
 
 app=FastAPI()
 app.include_router(authentication.router)
@@ -26,6 +27,17 @@ app.include_router(orders.router)
 app.include_router(order_lines.router)
 app.include_router(test_data.router)
 app.include_router(reviews.router)
+
+#This enables comunication between localhost 8000 and 3000
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get('/')
 def index():
