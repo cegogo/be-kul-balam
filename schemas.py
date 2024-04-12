@@ -23,13 +23,27 @@ class UserBase(BaseModel):
             raise ValueError('Password must contain at least one special character')
         return v
 
+class ImageInUser (BaseModel):
+    file_path: str
+    id: int
+    class Config():
+        from_attributes = True
+
+    
 class UserDisplay(BaseModel):
     username: str
     email: str
     id: int
+    images: List[ImageInUser] = []
     posts: List[Post] = []  #tpye of data which we want return
     class Config():
         from_attributes = True
+
+class UserImage (BaseModel):
+    id: int
+    file_path: str
+    user_id: int
+
 
 class FriendshipBase(BaseModel):
     user_id: int

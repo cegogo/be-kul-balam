@@ -1,9 +1,9 @@
 from typing import List
-from schemas import UserBase,UserDisplay, UserProductDisplay, Friendship
-from fastapi import APIRouter, Depends
+from schemas import UserBase,UserDisplay, UserProductDisplay, Friendship, UserImage, ImageInUser
+from fastapi import APIRouter, Depends, UploadFile, File
 from sqlalchemy.orm.session import Session
 from db.database import get_db
-from db import db_user
+from db import db_user, db_user_images
 from auth.oauth2 import get_current_user
 from db.models import DbFriendship
 
@@ -17,6 +17,11 @@ router = APIRouter(
 @router.post('/', response_model=UserDisplay)
 def create_user(request: UserBase, db: Session = Depends(get_db)):
     return db_user.create_user(db, request)
+
+#Inert image
+@router.post('/{id}/images', response_model=UserImage)
+def upload_profile_image(id: int, image: UploadFile = File(...), db: Session = Depends (get_db)):
+    return db_user_images.upload_user_image(db, id, image)
 
 #Read All Users
 @router.get('/all', response_model=List[UserDisplay])

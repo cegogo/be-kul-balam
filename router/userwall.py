@@ -27,7 +27,7 @@ def create_post(content: str, user_id: int, db: Session = Depends(get_db), curre
 
 #Inert image
 @router.post('/posts/{id}/images', response_model=PostImage)
-def upload_image(id: int, image: UploadFile = File(...), db: Session = Depends (get_db)):
+def upload_post_image(id: int, image: UploadFile = File(...), db: Session = Depends (get_db)):
     return db_post_images.upload_post_image(db, id, image)
 
 
