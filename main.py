@@ -41,7 +41,7 @@ app.add_middleware(
 
 @app.get('/')
 def index():
-    return {'Hello! Welcome to KulBalam'}
+    return {'message': 'Hello! Welcome to KulBalam'}
 
 
 class ConnectionManager:
