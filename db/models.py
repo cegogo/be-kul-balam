@@ -27,6 +27,8 @@ class DbUser(Base):
     # Explicitly define the foreign key relationship for friendships
     friendships = relationship("DbFriendship", back_populates="user", foreign_keys="[DbFriendship.user_id]")
 
+    images = relationship ('DbUserImage', back_populates='user')
+
     posts = relationship('DbPost', back_populates='user', cascade="all, delete")
 
     # Many-to-Many relationship with groups
@@ -37,6 +39,14 @@ class DbUser(Base):
 
     # Relationship with products
     products = relationship ('DbProduct', back_populates='user')
+
+
+class DbUserImage(Base):
+    __tablename__= 'user_image'
+    id = Column (Integer, primary_key=True, index=True)
+    file_path = Column (String)
+    user_id = Column (Integer, ForeignKey('users.id'))
+    user = relationship('DbUser', back_populates='images')
 
 class DbFriendship(Base):
     __tablename__ = 'friendships'
