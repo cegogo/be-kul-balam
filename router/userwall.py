@@ -1,12 +1,10 @@
-from schemas import PostBase, PostDisplay, PostUpdate, UserBase
-from fastapi import APIRouter, Depends, HTTPException
+from schemas import PostBase, PostDisplay, PostImage, PostUpdate, UserBase
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from db.database import get_db
-from db import db_post, db_user
+from db import db_post, db_user, db_post_images
 from auth.oauth2 import get_current_user
 from datetime import datetime
-import os
-import uuid
 
 router = APIRouter(
     tags=['userwall']
@@ -26,6 +24,11 @@ def create_post(content: str, user_id: int, db: Session = Depends(get_db), curre
         request=PostBase(content=content, user_id=user_id, username=username, timestamp=datetime.now())
     )
     return new_post
+
+#Inert image
+@router.post('/posts/{id}/images', response_model=PostImage)
+def upload_image(id: int, image: UploadFile = File(...), db: Session = Depends (get_db)):
+    return db_post_images.upload_post_image(db, id, image)
 
 
 # This endpoint is used to retrieve posts # Get all posts from User 

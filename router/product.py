@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, File, UploadFile
 from schemas import ProductBase, ProductDisplay, ProductImage, Review, ReviewDisplay
 from sqlalchemy.orm.session import Session
 from db.database import get_db
-from db import db_product, db_images, db_review, db_product
+from db import db_product, db_product_images, db_review, db_product
 
 router = APIRouter(
     prefix='/products',
@@ -38,7 +38,7 @@ def delete_product(id:int, db:Session = Depends(get_db)):
 #Inert image
 @router.post('/{id}/images', response_model=ProductImage)
 def upload_product_image(id: int, image: UploadFile = File(...), db: Session = Depends (get_db)):
-    return db_images.upload_product_image(db, id, image)
+    return db_product_images.upload_product_image(db, id, image)
 
 #Create product review
 @router.post('/{id}/reviews', response_model=ReviewDisplay)

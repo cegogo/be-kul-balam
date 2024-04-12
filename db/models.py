@@ -60,11 +60,20 @@ class DbPost(Base):
     username = Column(String)
 
     user = relationship('DbUser', back_populates='posts')
+    images = relationship ('DbPostImage', back_populates='post')
     comments = relationship('DbComment', back_populates= 'post', cascade="all, delete")
 
 
+class DbPostImage(Base):
+    __tablename__= 'post_image'
+    id = Column (Integer, primary_key=True, index=True)
+    file_path = Column (String)
+    post_id = Column (Integer, ForeignKey('posts.id'))
+    post = relationship('DbPost', back_populates='images')
+
+
 class DbComment(Base):
-    __tablename__ = 'comment'
+    __tablename__ = 'comments'
 
     id = Column(Integer, primary_key=True, index=True)
     text = Column(String)
@@ -74,7 +83,6 @@ class DbComment(Base):
     
     post = relationship('DbPost', back_populates= 'comments')
     
-
 
 class DbGroup(Base):
     __tablename__ = 'groups'
