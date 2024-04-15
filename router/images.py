@@ -7,6 +7,7 @@ router = APIRouter(
     prefix = '/images',
     tags=['images']
 )
+
 @router.get('/{id}')
 def get_image(id: int, db: Session = Depends (get_db)):
     return db_product_images.get_product_image(db, id)

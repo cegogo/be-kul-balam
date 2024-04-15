@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from enums import OrderStatus
 
-#Article inside UserDisplay
+#Post inside UserDisplay
 class Post(BaseModel):
     content: str
     class Config():

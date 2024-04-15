@@ -48,6 +48,7 @@ class DbUserImage(Base):
     user_id = Column (Integer, ForeignKey('users.id'))
     user = relationship('DbUser', back_populates='images')
 
+
 class DbFriendship(Base):
     __tablename__ = 'friendships'
 
@@ -76,6 +77,7 @@ class DbPost(Base):
 
 class DbPostImage(Base):
     __tablename__= 'post_image'
+
     id = Column (Integer, primary_key=True, index=True)
     file_path = Column (String)
     post_id = Column (Integer, ForeignKey('posts.id'))

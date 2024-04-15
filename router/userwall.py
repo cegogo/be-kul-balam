@@ -30,13 +30,19 @@ def create_post(content: str, user_id: int, db: Session = Depends(get_db), curre
 def upload_post_image(id: int, image: UploadFile = File(...), db: Session = Depends (get_db)):
     return db_post_images.upload_post_image(db, id, image)
 
+@router.get('/images/{id}')
+def get_image(id: int, db: Session = Depends (get_db)):
+    return db_post_images.get_post_image(db, id)
+
+@router.get('/postimage/all')
+def get_all_images(db: Session = Depends(get_db)):
+    return db_post_images.get_all_post_images(db)
 
 # This endpoint is used to retrieve posts # Get all posts from User 
 @router.get("/posts/all")
 def posts(db: Session = Depends(get_db)):
     posts = db_post.get_all(db)
     return posts
-
 
 #get spesific post
 @router.get('/posts/{id}') #, response_model=PostDisplay)
