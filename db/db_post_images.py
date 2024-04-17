@@ -1,3 +1,4 @@
+"""
 from fastapi import HTTPException, status, File, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy.orm.session import Session 
@@ -62,3 +63,4 @@ def delete_post_image(db: Session, id: int):
     db.delete(post_image)
     db.commit()
     raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
+"""

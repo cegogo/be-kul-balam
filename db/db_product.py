@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import HTTPException, status
 from sqlalchemy.orm.session import Session 
-from db.models import DbProduct, DbProductImage
+from db.models import DbProduct
 from schemas import ProductBase
 
 def insert_product (db: Session, request: ProductBase):
@@ -56,11 +56,6 @@ def delete_product(db: Session, id: int):
     product = db.query(DbProduct).filter(DbProduct.id == id).first()
     if product is None:
         raise HTTPException(status_code=404, detail=f"Product with id '{id}' not found")
-    
-    # Deletes product images attached
-    product_images = db.query(DbProductImage).filter(DbProductImage.product_id == id).all()
-    for product_image in product_images:
-        db.delete(product_image)
 
     db.delete(product)
     db.commit()

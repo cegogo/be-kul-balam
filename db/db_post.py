@@ -9,6 +9,7 @@ from typing import List
 def create_post(db: Session, request:PostBase):
     new_post = DbPost(
         content= request.content,
+        image_url = request.image_url,
         user_id = request.user_id,
         username= request.username,
         timestamp = datetime.datetime.now()
@@ -21,6 +22,8 @@ def create_post(db: Session, request:PostBase):
 def get_all(db: Session) -> List[DbPost]:
     posts = db.query(DbPost).all()
     return posts
+
+
 
 def get_post(db: Session, id:int):
     post = db.query(DbPost).filter(DbPost.id == id).first()

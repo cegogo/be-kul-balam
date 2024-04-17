@@ -44,7 +44,6 @@ class DbUser(Base):
 class DbUserImage(Base):
     __tablename__= 'user_image'
     id = Column (Integer, primary_key=True, index=True)
-    file_path = Column (String)
     user_id = Column (Integer, ForeignKey('users.id'))
     user = relationship('DbUser', back_populates='images')
 
@@ -66,22 +65,13 @@ class DbPost(Base):
     
     id = Column(Integer, primary_key=True)
     content = Column(String)
+    image_url = Column(String)
     timestamp = Column(DateTime)
     user_id = Column(Integer, ForeignKey('users.id'))
     username = Column(String)
 
     user = relationship('DbUser', back_populates='posts')
-    images = relationship ('DbPostImage', back_populates='post')
     comments = relationship('DbComment', back_populates= 'post', cascade="all, delete")
-
-
-class DbPostImage(Base):
-    __tablename__= 'post_image'
-
-    id = Column (Integer, primary_key=True, index=True)
-    file_path = Column (String)
-    post_id = Column (Integer, ForeignKey('posts.id'))
-    post = relationship('DbPost', back_populates='images')
 
 
 class DbComment(Base):

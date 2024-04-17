@@ -89,3 +89,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
 
 
 models.Base.metadata.create_all(engine)  #db engine
+
+app.mount('/images', StaticFiles(directory='images'), name='images')
+app.mount('/productimages', StaticFiles(directory='productimages'), name='productimages')
