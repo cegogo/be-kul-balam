@@ -7,6 +7,7 @@ from db import db_user, db_user_images
 from auth.oauth2 import get_current_user
 from db.models import DbFriendship
 
+#User router
 
 router = APIRouter(
     prefix= '/users',
