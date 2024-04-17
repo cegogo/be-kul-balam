@@ -1,10 +1,11 @@
-from fastapi import HTTPException, status
+"""
+from fastapi import HTTPException, status, File, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy.orm.session import Session 
 from db.models import DbPost, DbPostImage
-from fastapi import File, UploadFile
 import shutil
 import random, string
+from typing import List
 
 def upload_post_image(db: Session, post_id: int, image: UploadFile = File(...)):
     post = db.query(DbPost).filter(DbPost.id == post_id).first()
@@ -39,6 +40,22 @@ def get_post_image(db: Session, id: int):
         )
     return FileResponse(post_image.file_path)
 
+def get_all_post_images(db: Session) -> List[FileResponse]:
+    post_images = db.query(DbPostImage).all()
+    if not post_images:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No images found."
+        )
+    
+    file_responses = []
+    #static folders ve fastapi static files serve veya id uzerinden dynamic ????
+    for post_image in post_images:
+        id = str(post_image.id) 
+        file_responses.append(FileResponse(id))
+    
+    return file_responses
+
 def delete_post_image(db: Session, id: int):
     post_image = db.query(DbPostImage).filter(DbPostImage.id == id).first()
     if not post_image:
@@ -46,3 +63,4 @@ def delete_post_image(db: Session, id: int):
     db.delete(post_image)
     db.commit()
     raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
+"""

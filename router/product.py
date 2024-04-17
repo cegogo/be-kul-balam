@@ -4,6 +4,9 @@ from schemas import ProductBase, ProductDisplay, ProductImage, Review, ReviewDis
 from sqlalchemy.orm.session import Session
 from db.database import get_db
 from db import db_product, db_product_images, db_review, db_product
+import string
+import random
+import shutil
 
 router = APIRouter(
     prefix='/products',
