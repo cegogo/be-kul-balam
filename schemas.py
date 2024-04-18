@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from enums import OrderStatus
 
-#Post inside UserDisplay
+#Article inside UserDisplay
 class Post(BaseModel):
     content: str
     class Config():
@@ -73,13 +73,18 @@ class PostBase(BaseModel): #what we recieve from the user when we are creating p
     content: str
     user_id : int
     username: str
-    image_url: str
     timestamp: datetime
+
+class ImageInPost (BaseModel):
+    file_path: str
+    id: int
+    class Config():
+        from_attributes = True
 
 class  PostDisplay(BaseModel): #a data structure to send to the user when we are creating post
     content: str
-    image_url: str
     user: User
+    images: List[ImageInPost] = []
     timestamp: datetime
     class Config(): #convert instances of ORM models(db models) into dictionaries whrn serializing the data.
         from_attributes = True
@@ -201,6 +206,7 @@ class ProductImage (BaseModel):
     id: int
     file_path: str
     product_id: int
+
 class MinOrderLine(BaseModel):
     product_id: int
     quantity: int
