@@ -1,6 +1,6 @@
 #crud.py
 from sqlalchemy.orm.session import Session
-from db.models import DbPost
+from db.models import DbPost, DbUser
 from schemas import PostBase, PostUpdate
 from fastapi import HTTPException, Response, status
 import datetime
@@ -23,13 +23,19 @@ def get_all(db: Session) -> List[DbPost]:
     return posts
 
 
-
 def get_post(db: Session, id:int):
     post = db.query(DbPost).filter(DbPost.id == id).first()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
             detail= f'Post with id {id} not found')  #stop the code running
     return post
+
+"""def get_posts_by_user(db: Session, user_id: int) -> List[DbPost]:
+    user_posts = db.query(DbPost).filter(DbPost.user_id == user_id).all()
+    if not user_posts:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"No posts found for user with ID {user_id}")
+    return user_posts """
 
 def update_post(db: Session, id:int, request: PostUpdate): # Update post function now accepts PostUpdate model
     post = db.query(DbPost).filter(DbPost.id == id).first()

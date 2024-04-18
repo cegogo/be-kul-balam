@@ -1,7 +1,8 @@
+from typing import List
 from db.hash import Hash
 from sqlalchemy.orm.session import Session 
 from schemas import UserBase
-from db.models import DbUser
+from db.models import DbPost, DbUser
 from fastapi import HTTPException, Response, status
 
 def create_user(db: Session, request:UserBase):
@@ -70,6 +71,15 @@ def get_product_by_user_id (db: Session, id: int):
             detail=f"User with id '{id}' not found."
         )
     return user
+
+def get_posts_by_user_id(db: Session, id: int) -> List[DbPost]:
+    user = db.query(DbUser).filter(DbUser.id == id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id '{id}' not found."
+        )
+    return user.posts
 
 def count_all_users(db: Session) -> int:
     return db.query(DbUser).count()
