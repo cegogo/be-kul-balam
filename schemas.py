@@ -108,13 +108,14 @@ class UserAuth(BaseModel):
 class CommentDisplay(BaseModel):
     txt: str
     user_id: int
+    username: str
     timestamp: datetime
     class Config(): #convert instances of ORM models(db models) into dictionaries whrn serializing the data.
         from_attributes = True
     
 class CommentBase(BaseModel):
-    user_id: int
     txt: str
+    username: str
     post_id: int
 
 

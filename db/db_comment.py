@@ -15,7 +15,7 @@ def create_comment(db: Session, request: CommentBase):
     # Create the comment associated with the specified post
     new_comment = DbComment(
         text=request.txt,
-        user_id=request.user_id,
+        username=request.username,
         post_id=request.post_id,
         timestamp=datetime.now()
     )
@@ -26,7 +26,7 @@ def create_comment(db: Session, request: CommentBase):
 
 
 def get_all(db: Session, post_id: int):
-    return db.query(DbComment).filter(DbComment.id == post_id).all()
+    return db.query(DbComment).filter(DbComment.post_id == post_id).all()  # Use post_id to filter comments
 
 
 def delete_comment(db:Session, id: int):
