@@ -40,6 +40,8 @@ class DbUser(Base):
     # Relationship with products
     products = relationship ('DbProduct', back_populates='user')
 
+    # Relationship with review
+    review = relationship ('DbProductReview', back_populates='creator_username')
 
 class DbUserImage(Base):
     __tablename__= 'user_image'
@@ -169,4 +171,5 @@ class DbProductReview(Base):
     score = Column (Integer)
     comment = Column (String)
     creator_id = Column (Integer, ForeignKey('users.id'))
+    creator_username = relationship ('DbUser', back_populates='review')
     product = relationship ('DbProduct', back_populates='reviews')

@@ -240,8 +240,13 @@ class Review(BaseModel):
     score: int
     comment: str
 
+#Username inside ReviewDisplay
+class Username(BaseModel):
+    username: str
+
 class ReviewDisplay(BaseModel):
     creator_id: int
+    creator_username: Username
     product_id: int
     score: int
     comment: str

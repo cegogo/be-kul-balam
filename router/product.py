@@ -49,7 +49,7 @@ def create_review(id: int, creator_id: int, request: Review, db: Session = Depen
     return db_review.create_review(db, id, creator_id, request)
 
 #Get all reviews of a product
-@router.get("/{id}/reviews")
+@router.get("/{id}/reviews", response_model=List[ReviewDisplay])
 def get_reviews(id: int, db: Session = Depends(get_db)):
     reviews = db_review.get_all_product_reviews(db, id)
-    return {'reviews': reviews}
+    return reviews
