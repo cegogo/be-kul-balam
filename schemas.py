@@ -119,6 +119,7 @@ class CommentBase(BaseModel):
     txt: str
     username: str
     post_id: int
+    user_id: int
 
 
 #Group

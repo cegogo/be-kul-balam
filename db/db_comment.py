@@ -16,6 +16,7 @@ def create_comment(db: Session, request: CommentBase):
     new_comment = DbComment(
         text=request.txt,
         username=request.username,
+        user_id = request.user_id,
         post_id=request.post_id,
         timestamp=datetime.now()
     )
