@@ -29,8 +29,8 @@ def get_image(id: int, db: Session = Depends (get_db)):
     return db_user_images.get_user_image(db, id)
 
 #Read All Users
-@router.get('/all', response_model=List[UserDisplay])
-def get_all_users(db: Session= Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+@router.get('', response_model=List[UserDisplay])
+def get_all_users(db: Session= Depends(get_db)):
     return db_user.get_all_user(db)
 
 #Read a user

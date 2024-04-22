@@ -79,6 +79,7 @@ def get_posts_by_user_id(db: Session, id: int) -> List[DbPost]:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with id '{id}' not found."
         )
+    # Return posts directly
     return user.posts
 
 def count_all_users(db: Session) -> int:

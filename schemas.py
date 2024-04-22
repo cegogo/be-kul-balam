@@ -82,8 +82,10 @@ class ImageInPost (BaseModel):
         from_attributes = True
 
 class  PostDisplay(BaseModel): #a data structure to send to the user when we are creating post
+    id: int
     content: str
     user: User
+    user_id : int
     images: List[ImageInPost] = []
     timestamp: datetime
     class Config(): #convert instances of ORM models(db models) into dictionaries whrn serializing the data.
