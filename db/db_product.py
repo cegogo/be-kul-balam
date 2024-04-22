@@ -21,7 +21,7 @@ def insert_product (db: Session, request: ProductBase):
 def get_all_products (db: Session, nameFilter: str) -> List[DbProduct]:
     productsQuery = db.query(DbProduct)
     if(nameFilter != ''):
-        productsQuery = productsQuery.filter(DbProduct.product_name == nameFilter)
+        productsQuery = productsQuery.filter(DbProduct.product_name.icontains(nameFilter))
     
     return productsQuery.all()
 
