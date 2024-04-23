@@ -11,12 +11,12 @@ router = APIRouter(
     tags=["comment"]
 )
 
-@router.get('/all')
+@router.get('/all/{post_id}')  # Update the route to accept a post_id parameter
 def comment(post_id: int, db: Session = Depends(get_db)):
     return db_comment.get_all(db, post_id)
 
 @router.post('')
-def create_comment(request: CommentBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+def create_comment(request: CommentBase, db: Session = Depends(get_db)):
     return db_comment.create_comment(db, request)
 
 #Delete Post

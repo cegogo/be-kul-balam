@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.orm import Session
 from db.database import get_db
 from db.db_friendship import create_friendship, delete_friend_request, get_friend_request, get_friendship_by_users
-from db.models import DbFriendship
+from db.models import DbFriendship, DbUser
 from schemas import FriendshipCreate, Friendship
 from typing import List
 
@@ -52,3 +52,4 @@ def unfriend(id: int, db: Session = Depends(get_db)):
         return Response(status_code=204)
     else:
         raise HTTPException(status_code=404, detail="Friendship not found")
+    
