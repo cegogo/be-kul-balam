@@ -3,7 +3,6 @@ from fastapi import FastAPI, WebSocketDisconnect
 from router import join, user, userwall,comment, group, group_post, friendship, images, order_lines, orders, product, reviews, statistics, test_data
 from db import models
 from db.database import engine
-#from db.insert_admin import insert_admin
 from auth import authentication
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
