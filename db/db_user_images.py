@@ -16,7 +16,7 @@ def upload_user_image(db: Session, user_id: int, image: UploadFile = File(...)):
     rand_str = ''.join(random.choice(letters) for i in range(6)) #Generates 6 random letters for img name
     new = f'_{rand_str}.' #Adds the random letters to the file name
     filename = new.join(image.filename.rsplit('.', 1)) #Splits the prefix and adds name in the #1 index (0,1,2...)
-    path = f'images/{filename}' #Folder path
+    path = f'userimages/{filename}' #Folder path
 
     with open(path, 'wb') as buffer: #Saves the file in the path
         shutil.copyfileobj(image.file, buffer)
