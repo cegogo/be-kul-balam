@@ -23,7 +23,7 @@ def is_member(db: Session, user_id: int, group_id: int) -> bool:
     return db.query(query.exists()).scalar()
 
 @router.post('', response_model=GroupPostDisplay)
-def create_group_post(request: GroupPostBase, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+def create_group_post(request: GroupPostBase, db: Session = Depends(get_db)):
     # Check if the user is a member of the group
     user_id = request.author_id
     group_id = request.group_id

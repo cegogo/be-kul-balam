@@ -12,7 +12,7 @@ router = APIRouter(
 
 
 @router.post("/posts")
-def create_post(content: str, user_id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+def create_post(content: str, user_id: int, db: Session = Depends(get_db)):
     # Fetch the username associated with the provided user_id
     username = db_user.get_username(db=db, user_id=user_id)
     if not username:
@@ -61,7 +61,7 @@ def update_post(id: int, request: PostUpdate, db: Session = Depends(get_db), cur
 
 #Delete Post
 @router.delete('/posts/{id}')
-def delete_post(id:int, db:Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+def delete_post(id:int, db:Session = Depends(get_db)):
     return db_post.delete_post(db, id)
 
 
