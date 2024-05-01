@@ -1,7 +1,7 @@
 from typing import List
-from db.models import DbUser
-from schemas import GroupBase, GroupDisplay
-from fastapi import APIRouter, Depends
+from db.models import DbUser, DbGroup, group_membership
+from schemas import GroupBase, GroupDisplay, GroupMembers
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db.database import get_db
 from db import db_group
@@ -56,6 +56,18 @@ def read_group(group_id: int, db: Session = Depends(get_db)):
         members=member_ids,  # Pass only integer IDs
         visibility=group.visibility
     )
+
+
+@router.get("/{id}/members", response_model=List[GroupMembers])
+def get_group_members(id: int, db: Session = Depends(get_db)):
+    group = db.query(DbGroup).filter(DbGroup.id == id).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+    
+    members_with_usernames = db.query(DbUser.username).join(group_membership).filter(group_membership.c.group_id == id).all()
+    member_list = [{"username": member[0]} for member in members_with_usernames]
+    
+    return member_list
 
 @router.put("/{id}", response_model=GroupDisplay) 
 def update_group(id: int, group: GroupBase, db: Session = Depends(get_db)):

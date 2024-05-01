@@ -1,9 +1,9 @@
 from sqlalchemy.orm.session import Session
-from db.models import DbGroup
+from db.models import DbGroup, group_membership
 from datetime import datetime
 from fastapi import HTTPException, Response, status
 from typing import List
-from schemas import GroupBase, GroupDisplay
+from schemas import GroupBase, GroupDisplay, GroupMembers
 
 def create_group(db: Session, request: GroupBase):
     # Ensure that created_at is set to the current datetime if not provided
@@ -33,6 +33,10 @@ def get_group(db: Session, group_id: int) -> GroupDisplay:
             detail=f'Group with id {group_id} not found'
         )
     return group
+
+def get_members(db: Session, member_id: int) -> GroupMembers:
+    members= db.query(group_membership).filter(group_membership.id == member_id).first()
+    return members
 
 def update_group(db: Session, group_id: int, request: GroupBase):
     group = db.query(DbGroup).filter(DbGroup.id == group_id).first()

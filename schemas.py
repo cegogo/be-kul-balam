@@ -151,6 +151,13 @@ class GroupMembershipRequest(BaseModel):
 class GroupMembershipResponse(BaseModel):
     message: str
 
+class GroupMembers(BaseModel):
+    username:str
+
+    class Config:
+        from_attributes = True
+
+
 class GroupPostBase(BaseModel):
     content: str
     group_id: int
