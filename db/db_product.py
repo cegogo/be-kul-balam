@@ -4,13 +4,13 @@ from sqlalchemy.orm.session import Session
 from db.models import DbProduct
 from schemas import ProductBase
 
-def insert_product (db: Session, request: ProductBase):
+def insert_product (db: Session, request: ProductBase, user_id):
     new_product = DbProduct(
         product_name = request.product_name, 
         description = request.description,
         price = request.price,
         quantity = request.quantity,
-        seller_id = request.seller_id,
+        seller_id = user_id,
         published = request.published
     )
     db.add(new_product) 
