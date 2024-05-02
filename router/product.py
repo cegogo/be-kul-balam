@@ -36,8 +36,8 @@ def update_product(id: int, product_name: str, description: str, price: float, q
 
 #Delete a product
 @router.delete('/{id}')
-def delete_product(id:int, db:Session = Depends(get_db)):
-    return db_product.delete_product(db, id)
+def delete_product(id: int, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+    return db_product.delete_product(db, id, current_user.id)
 
 #Inert image
 @router.post('/{id}/images', response_model=ProductImage)

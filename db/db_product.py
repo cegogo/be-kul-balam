@@ -52,11 +52,12 @@ def update_product(db: Session, id: int, product_name: str, description: str, pr
     db.commit()
     return product
 
-def delete_product(db: Session, id: int):
+def delete_product(db: Session, id: int, current_user_id: int):
     product = db.query(DbProduct).filter(DbProduct.id == id).first()
     if product is None:
         raise HTTPException(status_code=404, detail=f"Product with id '{id}' not found")
-
+    if product.seller_id != current_user_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not authorized to delete this product")
     db.delete(product)
     db.commit()
-    raise HTTPException(status_code=status.HTTP_204_NO_CONTENT)
+    return HTTPException(status_code=status.HTTP_204_NO_CONTENT)
