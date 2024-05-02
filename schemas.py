@@ -255,6 +255,7 @@ class Username(BaseModel):
     username: str
 
 class ReviewDisplay(BaseModel):
+    id: int
     creator_id: int
     creator_username: Username
     product_id: int
