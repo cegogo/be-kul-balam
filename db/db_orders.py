@@ -5,7 +5,7 @@ from enums import OrderStatus
 from schemas import Order, MinOrderLine
 from sqlalchemy import func
 
-def create_empty_order (db: Session, user_id: int):
+def create_empty_order (db: Session, user_id):
     existing_order = db.query(DbOrder).filter(
         DbOrder.user_id == user_id,
         DbOrder.order_status == OrderStatus.PENDING

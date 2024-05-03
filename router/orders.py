@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
-from schemas import Order
+from schemas import Order, UserBase
 from sqlalchemy.orm.session import Session
 from db.database import get_db
 from db import db_orders
+from auth.oauth2 import get_current_user
 
 router = APIRouter(
     prefix='/orders',
@@ -11,8 +12,8 @@ router = APIRouter(
 
 #Create order by user
 @router.post('/')
-def create_order(user_id: int, db: Session = Depends(get_db)):
-    order = db_orders.create_empty_order(db, user_id)
+def create_order(db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+    order = db_orders.create_empty_order(db, current_user.id)
     return order
 
 #Get an order
