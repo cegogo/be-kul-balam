@@ -1,5 +1,5 @@
 from typing import List
-from schemas import PostDisplay, UserBase,UserDisplay, UserProductDisplay, Friendship, UserImage, ImageInUser
+from schemas import PostDisplay, UserBase,UserDisplay, UserProductDisplay, Friendship, UserImage
 from fastapi import APIRouter, Depends, Query, UploadFile, File
 from sqlalchemy.orm.session import Session
 from db.database import get_db
@@ -81,4 +81,3 @@ def get_friends(id: int, db: Session = Depends(get_db)):
             })
     
     return all_friendships
-

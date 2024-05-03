@@ -53,8 +53,8 @@ def create_order (db: Session, request: Order):
     db.refresh(new_order)
     return new_order
 
-#Creates a shopping kart
-def get_or_create_order_by_user(db: Session, user_id: int, order_status: OrderStatus):
+#Creates a shopping cart
+def get_or_create_order_by_user(db: Session, user_id, order_status: OrderStatus):
     order = db.query(DbOrder).\
         filter(DbOrder.user_id == user_id, DbOrder.order_status == order_status).\
         first()
