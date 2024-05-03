@@ -185,7 +185,6 @@ class ProductBase (BaseModel):
     price: float
     quantity: int 
     published: bool
-    seller_id: int
 
 #PRoductReview inside ReviewDisplay
 class ProductReview (BaseModel):
@@ -256,6 +255,7 @@ class Username(BaseModel):
     username: str
 
 class ReviewDisplay(BaseModel):
+    id: int
     creator_id: int
     creator_username: Username
     product_id: int
