@@ -46,8 +46,8 @@ def upload_product_image(id: int, image: UploadFile = File(...), db: Session = D
 
 #Create product review
 @router.post('/{id}/reviews', response_model=ReviewDisplay)
-def create_review(id: int, creator_id: int, request: Review, db: Session = Depends(get_db)):
-    return db_review.create_review(db, id, creator_id, request)
+def create_review(id: int, request: Review, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+    return db_review.create_review(db, id, current_user.id, request)
 
 #Get all reviews of a product
 @router.get("/{id}/reviews", response_model=List[ReviewDisplay])

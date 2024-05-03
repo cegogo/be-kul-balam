@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from db.models import DbProductReview, DbProduct
 from schemas import Review
 
-def create_review(db: Session, product_id: int, creator_id: int, request: Review):
+def create_review(db: Session, product_id: int, user_id, request: Review):
     product = db.query(DbProduct).filter(DbProduct.id == product_id).first()
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -21,16 +21,16 @@ def create_review(db: Session, product_id: int, creator_id: int, request: Review
         )
 
     existing_review = db.query(DbProductReview).filter(DbProductReview.product_id == product_id, 
-                                                       DbProductReview.creator_id == creator_id).first()
+                                                       DbProductReview.creator_id == user_id).first()
     if existing_review:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail=f"User with id '{creator_id}' has already created a review for product with id '{product_id}'")
+                            detail=f"User with id '{user_id}' has already created a review for product with id '{product_id}'")
 
     new_review = DbProductReview(
         score = request.score,
         comment = request.comment,
         product_id = product_id,
-        creator_id = creator_id
+        creator_id = user_id
     )
 
     db.add(new_review) 
