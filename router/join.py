@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db.database import get_db
-from schemas import GroupMembershipRequest
+from schemas import GroupMembershipRequest, GroupMembershipResponse
 from db.models import DbUser, DbGroup
-from db import db_join
+from db.db_join import join_group
 from db.models import group_membership
 
 router = APIRouter(
@@ -11,7 +11,7 @@ router = APIRouter(
     tags=['groups']
 )
 
-@router.post("/{id}/join_group")
+@router.post("/{id}/join_group", response_model=GroupMembershipResponse)
 def join_group_endpoint(id: int, request: GroupMembershipRequest, username: str, db: Session = Depends(get_db)):
     user = db.query(DbUser).filter(DbUser.id == request.user_id).first()
     group = db.query(DbGroup).filter(DbGroup.id == id).first()
@@ -24,14 +24,11 @@ def join_group_endpoint(id: int, request: GroupMembershipRequest, username: str,
         raise HTTPException(status_code=409, detail=f"User already in the group with the id '{id}'")
     
     # Assuming membership_id is None for now, change as needed
-    join_group(db, group_id=id, user_id=user.id, membership_id=None, username=username)
+    join_group(db, group_id=id,membership_id=None, username=username)
     group.members.append(user)  # Assuming group.members is a list
     # Commit changes to the database session
     return {"message": f"User joined the group with the id '{id}'"}
 
-def join_group(db: Session, group_id: int, user_id: int, membership_id: int, username: str):
-    db.execute(group_membership.insert().values(group_id=group_id, user_id=user_id, membership_id=membership_id, username=username))
-    db.commit()
 
 
 @router.put("/{id}/leave_group")

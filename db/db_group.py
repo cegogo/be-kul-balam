@@ -1,11 +1,12 @@
 from sqlalchemy.orm.session import Session
+from db.db_join import join_group
 from db.models import DbGroup, group_membership
 from datetime import datetime
 from fastapi import HTTPException, Response, status
 from typing import List
 from schemas import GroupBase, GroupDisplay, GroupMembers
 
-def create_group(db: Session, request: GroupBase):
+def create_group(db: Session, request: GroupBase, user_id: int, username: str):
     # Ensure that created_at is set to the current datetime if not provided
     created_at = request.created_at or datetime.now()
     
@@ -19,7 +20,20 @@ def create_group(db: Session, request: GroupBase):
     # Refresh the group instance to fetch the generated ID from the database
     db.refresh(new_group)
     
-    return new_group
+    # Automatically join the user to the group
+    join_group(db, group_id=new_group.id, user_id=user_id, membership_id=None, username=username)
+
+    # Return the created group as per GroupDisplay model
+    return {
+        "id": new_group.id,
+        "name": new_group.name,
+        "description": new_group.description,
+        "created_at": new_group.created_at,
+        "creator_id": new_group.creator_id,
+        "members": [],  # Assuming the members list is empty initially
+        "visibility": new_group.visibility
+    }
+
 
 def get_all_groups(db: Session) -> List[GroupDisplay]:
     groups = db.query(DbGroup).all()
