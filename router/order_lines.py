@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends 
 from enums import OrderStatus
-from schemas import MinOrderLine, OrderLine
+from schemas import MinOrderLine, OrderLine, UserBase
 from sqlalchemy.orm.session import Session
 from db.database import get_db
 from db import db_orders
+from auth.oauth2 import get_current_user
 
 router = APIRouter(
     prefix='/order_lines',
@@ -13,8 +14,8 @@ router = APIRouter(
 #Create order by user
 #@router.post('/user/{user_id}/order_line')
 @router.post('/')
-def create_order_line(request: MinOrderLine, user_id: int, db: Session = Depends(get_db)):
-    order = db_orders.get_or_create_order_by_user(db, user_id, OrderStatus.PENDING)
+def create_order_line(request: MinOrderLine, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+    order = db_orders.get_or_create_order_by_user(db, current_user.id, OrderStatus.PENDING)
     return db_orders.create_order_line(db, order.id, request.product_id, request.quantity)
 
 #Get an order line
