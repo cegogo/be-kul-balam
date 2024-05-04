@@ -42,7 +42,7 @@ def update_friendship_status(id: int, status: str, db: Session = Depends(get_db)
     raise HTTPException(status_code=404, detail="Friendship request not found")
 
 
-@router.delete("/friends/{id}")
+@router.delete("/friends/{friendship_id}")
 def unfriend(id: int, db: Session = Depends(get_db)):
     """Remove a friendship."""
     friendship = db.query(DbFriendship).filter(DbFriendship.id == id).first()
