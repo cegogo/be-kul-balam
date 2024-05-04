@@ -29,5 +29,5 @@ def delete_order(id:int, db:Session = Depends(get_db)):
 
 #Get an order
 @router.get('/', response_model=Order)
-def get_or_create_order_by_user(order_status: OrderStatus, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+def get_or_create_order_by_user(order_status: OrderStatus = OrderStatus.PENDING, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     return db_orders.get_or_create_order_by_user(db, current_user.id, order_status)

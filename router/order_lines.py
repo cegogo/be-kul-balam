@@ -12,7 +12,6 @@ router = APIRouter(
 )
 
 #Create order by user
-#@router.post('/user/{user_id}/order_line')
 @router.post('/')
 def create_order_line(request: MinOrderLine, db: Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
     order = db_orders.get_or_create_order_by_user(db, current_user.id, OrderStatus.PENDING)
