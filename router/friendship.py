@@ -15,14 +15,14 @@ router = APIRouter(
 
 
 @router.post("/friendships", response_model=Friendship)
-def send_friend_request(from_user_id: int, to_user_id: int, db: Session = Depends(get_db)):
+def send_friend_request(from_user_id: int, to_user_id: int,sender_username: str, db: Session = Depends(get_db)):
     """Send a friend request from one user to another."""
     friendship = get_friendship_by_users(db, from_user_id, to_user_id)
     if friendship:
         raise HTTPException(status_code=400, detail="Friendship request already exists")
 
-    friendship_data = FriendshipCreate(user_id=from_user_id, friend_id=to_user_id)
-    friendship_to_data =FriendshipCreate(user_id=to_user_id, friend_id=from_user_id)
+    friendship_data = FriendshipCreate(user_id=from_user_id, friend_id=to_user_id,sender_username=sender_username)
+    friendship_to_data =FriendshipCreate(user_id=to_user_id, friend_id=from_user_id,sender_username=sender_username)
     res= create_friendship(db, friendship_data)
     create_friendship(db, friendship_to_data)
     friendship = get_friend_request(db, res.id)

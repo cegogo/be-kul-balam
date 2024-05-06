@@ -83,6 +83,7 @@ def get_friends(id: int, db: Session = Depends(get_db)):
                     "user_id": friendship.user_id,
                     "friend_id": friendship.friend_id,
                     "id": friendship.id,
+                    "sender_username": friendship.sender_username
                 })
     
     return all_friendships
