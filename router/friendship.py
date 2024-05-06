@@ -55,13 +55,26 @@ def update_friendship_status(id: int, status: str, db: Session = Depends(get_db)
 
 
 @router.delete("/friends/{friendship_id}")
-def unfriend(id: int, db: Session = Depends(get_db)):
+def unfriend(friendship_id: int, db: Session = Depends(get_db)):
     """Remove a friendship."""
-    friendship = db.query(DbFriendship).filter(DbFriendship.id == id).first()
+    friendship = db.query(DbFriendship).filter(DbFriendship.id == friendship_id).first()
     if friendship:
+        # Delete the friendship from the first user's perspective
         db.delete(friendship)
+        
+        # Find the corresponding friendship from the other user's perspective
+        inverse_friendship = db.query(DbFriendship).filter(
+            (DbFriendship.user_id == friendship.friend_id) &
+            (DbFriendship.friend_id == friendship.user_id)
+        ).first()
+        
+        if inverse_friendship:
+            # Delete the friendship from the other user's perspective
+            db.delete(inverse_friendship)
+        
         db.commit()
         return Response(status_code=204)
     else:
         raise HTTPException(status_code=404, detail="Friendship not found")
+
     
