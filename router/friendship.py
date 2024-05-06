@@ -22,8 +22,20 @@ def send_friend_request(from_user_id: int, to_user_id: int, db: Session = Depend
         raise HTTPException(status_code=400, detail="Friendship request already exists")
 
     friendship_data = FriendshipCreate(user_id=from_user_id, friend_id=to_user_id)
-    return create_friendship(db, friendship_data)
+    friendship_to_data =FriendshipCreate(user_id=to_user_id, friend_id=from_user_id)
+    res= create_friendship(db, friendship_data)
+    create_friendship(db, friendship_to_data)
+    friendship = get_friend_request(db, res.id)
+    friendship.accepted = True
+    db.commit()
+    return res
 
+
+@router.get("/friendshiprequests", response_model=List[Friendship])
+def get_friend_requests(user_id: int, db: Session = Depends(get_db)):
+    """Get all friend requests for a given user."""
+    friend_requests = db.query(DbFriendship).filter(DbFriendship.user_id == user_id, DbFriendship.accepted == False).all()
+    return friend_requests
 
 @router.put("/friendships/{id}", response_model=Friendship)
 def update_friendship_status(id: int, status: str, db: Session = Depends(get_db)):
@@ -42,7 +54,7 @@ def update_friendship_status(id: int, status: str, db: Session = Depends(get_db)
     raise HTTPException(status_code=404, detail="Friendship request not found")
 
 
-@router.delete("/friends/{id}")
+@router.delete("/friends/{friendship_id}")
 def unfriend(id: int, db: Session = Depends(get_db)):
     """Remove a friendship."""
     friendship = db.query(DbFriendship).filter(DbFriendship.id == id).first()

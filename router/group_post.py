@@ -59,7 +59,7 @@ def update_group_post(group_id: int, post_id: int, request: GroupPostUpdate, use
     return updated_post
 
 @router.delete('/{id}')
-def delete_group_post(group_id: int, post_id: int, user_id: int = Query(...), db: Session = Depends(get_db),current_user: UserBase = Depends(get_current_user)):
+def delete_group_post(group_id: int, post_id: int, user_id: int = Query(...), db: Session = Depends(get_db)):
     group_post = db_group_post.get_group_post(db, post_id)
     if group_post.group_id != group_id:
         raise HTTPException(status_code=403, detail="Post does not belong to the specified group")

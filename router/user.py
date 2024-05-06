@@ -1,6 +1,7 @@
 from typing import List
-from schemas import PostDisplay, UserBase,UserDisplay, UserProductDisplay, Friendship, UserImage
-from fastapi import APIRouter, Depends, Query, UploadFile, File
+from db.db_friendship import get_friendship_by_user
+from schemas import PostDisplay, UserBase,UserDisplay, UserProductDisplay, Friendship, UserImage, ImageInUser
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from sqlalchemy.orm.session import Session
 from db.database import get_db
 from db import db_user, db_user_images
@@ -61,23 +62,27 @@ def get_product_by_user_id (id: int, db: Session = Depends (get_db)):
 def get_friends(id: int, db: Session = Depends(get_db)):
     """Get a list of friendships for a given user."""
     friendships = db.query(DbFriendship).filter(
-        (DbFriendship.user_id == id) | (DbFriendship.friend_id == id)
+        (DbFriendship.user_id == id)
     ).all()
     
     all_friendships = []
-    
+    is_accepted = False
     for friendship in friendships:
         if friendship.user_id == id:
-            all_friendships.append({
-                "user_id": friendship.user_id,
-                "friend_id": friendship.friend_id,
-                "id": friendship.id,
-            })
+            friendship_list= get_friendship_by_user(db, friendship.user_id, friendship.friend_id)
+            for friendship_l in friendship_list:
+                if friendship_l.accepted == 1:
+                    is_accepted = True
+                else:
+                     raise HTTPException(status_code=400, detail="No friend found.")
+
         else:
+            raise HTTPException(status_code=400, detail="something went wrong.")
+        if  is_accepted:
             all_friendships.append({
-                "user_id": friendship.friend_id,
-                "friend_id": friendship.user_id,
-                "id": friendship.id,
-            })
+                    "user_id": friendship.user_id,
+                    "friend_id": friendship.friend_id,
+                    "id": friendship.id,
+                })
     
     return all_friendships

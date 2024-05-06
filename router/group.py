@@ -14,9 +14,9 @@ router = APIRouter(
 
 
 @router.post("/", response_model=GroupDisplay)
-def create_group(group: GroupBase, db: Session = Depends(get_db)):
+def create_group(group: GroupBase, user_id: int, username: str, db: Session = Depends(get_db)):
     # Create the group in the database
-    new_group = db_group.create_group(db=db, request=group)
+    new_group = db_group.create_group(db=db, request=group, user_id=user_id, username=username)
     # Return the created group
     return new_group
 
