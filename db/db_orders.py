@@ -5,7 +5,7 @@ from enums import OrderStatus
 from schemas import Order, MinOrderLine
 from sqlalchemy import func
 
-def create_empty_order (db: Session, user_id: int):
+def create_empty_order (db: Session, user_id):
     existing_order = db.query(DbOrder).filter(
         DbOrder.user_id == user_id,
         DbOrder.order_status == OrderStatus.PENDING
@@ -35,17 +35,17 @@ def create_empty_order (db: Session, user_id: int):
     return new_order
 
 
-def create_order (db: Session, request: Order):
-    buyer = db.query(DbUser).filter(DbUser.id == request.user_id).first()
+def create_order (db: Session, order_status, user_id):
+    buyer = db.query(DbUser).filter(DbUser.id == user_id).first()
     if not buyer:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Buyer with ID '{request.user_id}' not found."
+            detail=f"Buyer with ID '{user_id}' not found."
         )
 
     new_order = DbOrder(
-        order_status = request.order_status, 
-        user_id = buyer.id,
+        order_status = order_status, 
+        user_id = user_id,
         total = 0
     )
     db.add(new_order) 
@@ -53,17 +53,13 @@ def create_order (db: Session, request: Order):
     db.refresh(new_order)
     return new_order
 
-#Creates a shopping kart
-def get_or_create_order_by_user(db: Session, user_id: int, order_status: OrderStatus):
+#Creates a shopping cart
+def get_or_create_order_by_user(db: Session, user_id, order_status: OrderStatus):
     order = db.query(DbOrder).\
         filter(DbOrder.user_id == user_id, DbOrder.order_status == order_status).\
         first()
     if not order:
-        request = Order(
-            order_status=order_status,
-            user_id=user_id
-        )
-        return create_order(db, request)
+        return create_order(db,order_status,user_id )
     return order
 
 def get_order(db: Session, order_id: int):
@@ -91,24 +87,33 @@ def create_order_line(db: Session, order_id: int, product_id: int, quantity: int
 
     order = db.query(DbOrder).filter(DbOrder.id == order_id).first()
     if not order:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Order with id '{product_id}' not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Order with id '{order_id}' not found.")
 
     total_price = product.price * quantity
     
-    new_order_line = DbOrderLine(
-        order_id=order.id,
-        product_id=product.id,
-        quantity=quantity,
-        total=total_price
-    )
+    existing_product_order_line = db.query(DbOrderLine).filter(DbOrderLine.order_id == order_id, DbOrderLine.product_id == product_id).first()
     
-    db.add(new_order_line)
+    if existing_product_order_line:
+        existing_product_order_line.quantity += quantity
+        existing_product_order_line.total += total_price
+        order.total += total_price
+        db.commit()
+        db.refresh(existing_product_order_line)
+        return existing_product_order_line
     
-    order.total += total_price
-   
-    db.commit()
-    db.refresh(new_order_line)
-    return new_order_line
+    else:
+        new_order_line = DbOrderLine(
+            order_id=order.id,
+            product_id=product.id,
+            quantity=quantity,
+            total=total_price
+        )
+    
+        db.add(new_order_line)
+        order.total += total_price
+        db.commit()
+        db.refresh(new_order_line)
+        return new_order_line
 
 def update_order_line(db: Session, id: int, request: MinOrderLine):
     order_line = db.query(DbOrderLine).filter(DbOrderLine.id == id).first()

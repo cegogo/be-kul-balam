@@ -223,6 +223,7 @@ class MinOrderLine(BaseModel):
 
 class OrderLine(BaseModel):
     order_id: Optional[int]
+    id: int
     product_id: int
     quantity: int
     total: Optional[float]
@@ -231,6 +232,7 @@ class OrderLine(BaseModel):
 
 #Inside Order
 class OrderLines(BaseModel):
+    id: int
     product_id: int
     quantity: int
     total: Optional[float]
