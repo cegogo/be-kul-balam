@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, File, UploadFile
 from auth.oauth2 import get_current_user
 from schemas import ProductBase, ProductDisplay, ProductImage, Review, ReviewDisplay, UserBase
@@ -26,8 +26,10 @@ def get_product_by_id(id: int, db: Session = Depends(get_db)):
 
 #Get products
 @router.get('/', response_model=List[ProductDisplay])
-def get_product( db: Session = Depends (get_db), product_name: str=''): #str='' for query parameter
-    return db_product.get_all_products(db, product_name)
+def get_product( db: Session = Depends (get_db), product_name: str='', user_products: bool=False, price_order: Optional[str]=None,
+                current_user: UserBase = Depends(get_current_user)): #str='' for query parameter
+    user_id = current_user.id if user_products else None
+    return db_product.get_all_products(db, product_name, user_id, price_order)
 
 #Update a product
 @router.put('/{id}',  response_model=ProductDisplay)
