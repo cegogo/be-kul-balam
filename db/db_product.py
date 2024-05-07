@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm.session import Session 
 from db.models import DbProduct
@@ -18,11 +18,16 @@ def insert_product (db: Session, request: ProductBase, user_id):
     db.refresh(new_product)
     return new_product
 
-def get_all_products (db: Session, nameFilter: str) -> List[DbProduct]:
+def get_all_products (db: Session, nameFilter: str, user_id: Optional[int]=None, price_order: Optional[str]=None) -> List[DbProduct]:
     productsQuery = db.query(DbProduct)
     if(nameFilter != ''):
         productsQuery = productsQuery.filter(DbProduct.product_name.icontains(nameFilter))
-    
+    if(user_id):
+        productsQuery = productsQuery.filter(DbProduct.seller_id == user_id)
+    if price_order == 'asc':
+        productsQuery = productsQuery.order_by(DbProduct.price.asc())
+    if price_order == 'desc':
+        productsQuery = productsQuery.order_by(DbProduct.price.desc())
     return productsQuery.all()
 
 def count_all_products(db: Session) -> int: 
