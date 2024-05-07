@@ -40,9 +40,9 @@ def get_user(id: int, db:Session =  Depends(get_db)):
     return db_user.get_user(db, id)
 
 #Update User
-@router.put('/{id}', response_model=UserDisplay)
-def update_user(id: int, request:UserBase, db:Session = Depends(get_db)):
-    return db_user.update_user(db, id, request)
+@router.put('/update', response_model=UserDisplay)
+def update_user(request:UserBase, db:Session = Depends(get_db), current_user: UserBase = Depends(get_current_user)):
+    return db_user.update_user(db, current_user.id, request)
 
 # Delete User
 @router.delete('/{id}')

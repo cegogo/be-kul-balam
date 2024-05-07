@@ -40,18 +40,18 @@ def get_user_by_username(db:Session, username: str):
     return user
 
 
-def update_user(db: Session, id:int, request:UserBase):
-    user = db.query(DbUser).filter(DbUser.id == id)
+def update_user(db: Session, user_id, request:UserBase):
+    user = db.query(DbUser).filter(DbUser.id == user_id)
     if not user.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-            detail= f'User with id {id} not found')  
+            detail= f'User with id {user_id} not found')  
     user.update({
         DbUser.username: request.username,
         DbUser.email: request.email,
         DbUser.password: Hash.bcrypt(request.password)
     })
     db.commit()
-    user = db.query(DbUser).filter(DbUser.id == id).first()
+    user = db.query(DbUser).filter(DbUser.id == user_id).first()
     return user
 
 def delete_user(db:Session, id: int):
