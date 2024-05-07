@@ -48,6 +48,7 @@ class UserImage (BaseModel):
 class FriendshipBase(BaseModel):
     user_id: int
     friend_id: int
+    sender_username: str
 
 class FriendshipCreate(FriendshipBase):
     pass

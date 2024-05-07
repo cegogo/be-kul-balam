@@ -15,14 +15,14 @@ router = APIRouter(
 
 
 @router.post("/friendships", response_model=Friendship)
-def send_friend_request(from_user_id: int, to_user_id: int, db: Session = Depends(get_db)):
+def send_friend_request(from_user_id: int, to_user_id: int,sender_username: str, db: Session = Depends(get_db)):
     """Send a friend request from one user to another."""
     friendship = get_friendship_by_users(db, from_user_id, to_user_id)
     if friendship:
         raise HTTPException(status_code=400, detail="Friendship request already exists")
 
-    friendship_data = FriendshipCreate(user_id=from_user_id, friend_id=to_user_id)
-    friendship_to_data =FriendshipCreate(user_id=to_user_id, friend_id=from_user_id)
+    friendship_data = FriendshipCreate(user_id=from_user_id, friend_id=to_user_id,sender_username=sender_username)
+    friendship_to_data =FriendshipCreate(user_id=to_user_id, friend_id=from_user_id,sender_username=sender_username)
     res= create_friendship(db, friendship_data)
     create_friendship(db, friendship_to_data)
     friendship = get_friend_request(db, res.id)
@@ -55,13 +55,26 @@ def update_friendship_status(id: int, status: str, db: Session = Depends(get_db)
 
 
 @router.delete("/friends/{friendship_id}")
-def unfriend(id: int, db: Session = Depends(get_db)):
+def unfriend(friendship_id: int, db: Session = Depends(get_db)):
     """Remove a friendship."""
-    friendship = db.query(DbFriendship).filter(DbFriendship.id == id).first()
+    friendship = db.query(DbFriendship).filter(DbFriendship.id == friendship_id).first()
     if friendship:
+        # Delete the friendship from the first user's perspective
         db.delete(friendship)
+        
+        # Find the corresponding friendship from the other user's perspective
+        inverse_friendship = db.query(DbFriendship).filter(
+            (DbFriendship.user_id == friendship.friend_id) &
+            (DbFriendship.friend_id == friendship.user_id)
+        ).first()
+        
+        if inverse_friendship:
+            # Delete the friendship from the other user's perspective
+            db.delete(inverse_friendship)
+        
         db.commit()
         return Response(status_code=204)
     else:
         raise HTTPException(status_code=404, detail="Friendship not found")
+
     

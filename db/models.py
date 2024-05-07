@@ -55,6 +55,7 @@ class DbFriendship(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('users.id'))
+    sender_username = Column(String)
     friend_id = Column(Integer, ForeignKey('users.id'))
     accepted = Column(Boolean, default=False)  # New field to indicate acceptance status
 
