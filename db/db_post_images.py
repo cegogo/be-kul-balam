@@ -31,7 +31,7 @@ def upload_post_image(db: Session, post_id: int, image: UploadFile = File(...)):
     return new_image
 
 def get_post_image(db: Session, id: int):
-    post_image = db.query(DbPostImage).filter(DbPostImage.id == id).first()
+    post_image = db.query(DbPostImage).filter(DbPostImage.post_id == id).first()
     if not post_image:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
