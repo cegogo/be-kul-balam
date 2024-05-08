@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm.session import Session
 from db.database import get_db
 from db import db_product, db_user
-from schemas import ProductBase, UserBase
+from schemas import ProductBase, UserBase, TestProductBase
 
 router = APIRouter(
     tags=[]
@@ -22,26 +22,27 @@ def create_users(db: Session):
 
 def create_products(db: Session):
     for name in ('camera', 'watch', 'laptop', 'smart phone'):
-        product = ProductBase(
+        product = TestProductBase(
             product_name=name,
             description='good quality',
             price=random.randint(100,200),
             quantity=random.randint(1,10), 
-            published=True, 
+            published=True,
             seller_id=random.randint(1,6)
-            )
-        db_product.insert_product(db, product)
+        )
+        db_product.test_products(db, product, user_id=product.seller_id)
+    return {'created': True}
 
 @router.post('/test_data/products')
 def create_products(db: Session = Depends(get_db)):
     for name in ('camera', 'watch', 'laptop', 'smart phone'):
-        product = ProductBase(
+        product = TestProductBase(
             product_name=name,
             description='good quality',
             price=random.randint(100,200),
             quantity=random.randint(1,10), 
-            published=True, 
-            seller_id=random.randint(1,5)
-            )
-        db_product.insert_product(db, product)
+            published=True,
+            seller_id=random.randint(1,6)
+        )
+        db_product.test_products(db, product, user_id=product.seller_id)
     return {'created': True}

@@ -2,7 +2,21 @@ from typing import List, Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm.session import Session 
 from db.models import DbProduct
-from schemas import ProductBase
+from schemas import ProductBase, TestProductBase
+
+def test_products(db: Session, request: TestProductBase, user_id):
+    new_product = DbProduct(
+        product_name=request.product_name, 
+        description=request.description,
+        price=request.price,
+        quantity=request.quantity,
+        seller_id=user_id,
+        published=request.published
+    )
+    db.add(new_product) 
+    db.commit()
+    db.refresh(new_product)
+    return new_product
 
 def insert_product (db: Session, request: ProductBase, user_id):
     new_product = DbProduct(

@@ -187,6 +187,14 @@ class ProductBase (BaseModel):
     quantity: int 
     published: bool
 
+class TestProductBase (BaseModel):
+    product_name: str
+    description: str
+    price: float
+    quantity: int 
+    published: bool
+    seller_id: int
+
 #PRoductReview inside ReviewDisplay
 class ProductReview (BaseModel):
     product_name: str
