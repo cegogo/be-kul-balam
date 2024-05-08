@@ -31,11 +31,11 @@ def upload_user_image(db: Session, user_id: int, image: UploadFile = File(...)):
     return new_image
 
 def get_user_image(db: Session, id: int):
-    user_image = db.query(DbUserImage).filter(DbUserImage.id == id).first()
+    user_image = db.query(DbUserImage).filter(DbUserImage.user_id == id).first()
     if not user_image:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Image with id '{id}' not found."
+            detail=f"Image of user id '{id}' not found."
         )
     return FileResponse(user_image.file_path)
 
